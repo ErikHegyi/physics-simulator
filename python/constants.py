@@ -29,3 +29,24 @@ NULL_VECTOR: Vector = Vector(ZERO, ZERO, ZERO)
 
 # Origo
 ORIGO: Point = Point(ZERO, ZERO, ZERO)
+
+# One second
+SECOND: Scalar = 1.
+
+# One minute
+MINUTE: Scalar = 60.
+
+# One hour
+HOUR: Scalar = 3600.
+
+# One Day
+DAY: Scalar = 86_400.
+
+# One Week
+WEEK: Scalar = 604_800.
+
+# One Month (28 days)
+MONTH: Scalar = 2_419_200.
+
+# One Year
+YEAR: Scalar = 31_556_926.
