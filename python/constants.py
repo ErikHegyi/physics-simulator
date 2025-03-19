@@ -50,3 +50,6 @@ MONTH: Scalar = 2_419_200.
 
 # One Year
 YEAR: Scalar = 31_556_926.
+
+# Lightspeed
+c: Scalar = 299_792_458.
