@@ -31,3 +31,6 @@ class Vector:
 
     def magnitude(self) -> Scalar:
         """Calculate the magnitude of the vector."""
+
+    def mul(self, other: Scalar) -> Vector:
+        """Multiply the vector by the given amount."""
