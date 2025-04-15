@@ -1,36 +1,40 @@
 use pyo3::{pyclass, pymethods};
+use crate::scalar::Scalar;
+
 
 /// A point in a 3-dimensional space
 #[derive(Debug, Clone, Copy, PartialEq, PartialOrd)]
 #[pyclass]
 pub struct Point {
     #[pyo3(get, set)]
-    pub x: f64,  // Width
+    pub x: Scalar,  // Width
     #[pyo3(get, set)]
-    pub y: f64,  // Height
+    pub y: Scalar,  // Height
     #[pyo3(get, set)]
-    pub z: f64  // Depth
+    pub z: Scalar  // Depth
 }
 
 #[pymethods]
 impl Point {
     #[new]
-    pub const fn new(x: f64, y: f64, z: f64) -> Self {
+    pub const fn new(x: Scalar, y: Scalar, z: Scalar) -> Self {
         Self { x, y, z }
     }
 
     /// Calculate the distance between two points
-    pub fn distance(&self, other: &Point) -> f64 {
-        let x: f64 = other.x - self.x;
-        let y: f64 = other.y - self.y;
-        let z: f64 = other.z - self.z;
+    pub fn distance(&self, other: &Point) -> Scalar {
+        let x: Scalar = other.x - self.x;
+        let y: Scalar = other.y - self.y;
+        let z: Scalar = other.z - self.z;
 
-        (x.powi(2) + y.powi(2) + z.powi(2)).sqrt()
+        Scalar::new(
+            (x.value.powi(2) + y.value.powi(2) + z.value.powi(2)).sqrt()
+        )
     }
 
     pub fn __add__(&self, rhs: Self) -> Self { self.clone() + rhs }
     pub fn __sub__(&self, rhs: Self) -> Self { self.clone() - rhs }
-    pub fn __mul__(&self, rhs: f64) -> Self {
+    pub fn __mul__(&self, rhs: Scalar) -> Self {
         Self {
             x: self.x * rhs,
             y: self.y * rhs,

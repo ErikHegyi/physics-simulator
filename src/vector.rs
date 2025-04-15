@@ -23,7 +23,7 @@ pub struct Vector {
 #[pymethods]
 impl Vector {
     #[new]
-    pub const fn new(x: f64, y: f64, z: f64) -> Self {
+    pub const fn new(x: Scalar, y: Scalar, z: Scalar) -> Self {
         Self { point: Point::new(x, y, z) }
     }
 
@@ -46,15 +46,15 @@ impl Vector {
     #[staticmethod]
     pub fn from_magnitude(magnitude: f64, a: &Point, b: &Point) -> Self {
         // Calculate the distances between the points
-        let dx: f64 = b.x - a.x;
-        let dy: f64 = b.y - a.y;
-        let dz: f64 = b.z - a.z;
+        let dx: Scalar = b.x - a.x;
+        let dy: Scalar = b.y - a.y;
+        let dz: Scalar = b.z - a.z;
 
         // Calculate the total distance
         let origo: Point = Point {
-            x: 0.,
-            y: 0.,
-            z: 0.
+            x: Scalar::new(0.),
+            y: Scalar::new(0.),
+            z: Scalar::new(0.)
         };
         let distance = Point::new(dx, dy, dz).distance(&origo);
 
@@ -74,10 +74,10 @@ impl Vector {
     /// Calculate the magnitude of the vector
     pub fn magnitude(&self) -> f64 {
         // Square of the magnitude in the horizontal plane
-        let horizontal: f64 = self.point.x.powi(2) + self.point.z.powi(2);
+        let horizontal: f64 = self.point.x.value.powi(2) + self.point.z.value.powi(2);
 
         // Calculate the magnitude
-        let magnitude: f64 = (horizontal + self.point.y.powi(2)).sqrt();
+        let magnitude: f64 = (horizontal + self.point.y.value.powi(2)).sqrt();
 
         magnitude
     }
@@ -85,7 +85,7 @@ impl Vector {
     pub fn __add__(&self, rhs: Self) -> Self { self.clone() + rhs }
     pub fn __sub__(&self, rhs: Self) -> Self { self.clone() - rhs }
     pub fn __mul__(&self, rhs: Self) -> Self { self.clone() * rhs }
-    pub fn __truediv__(&self, rhs: f64) -> Self { self.clone() / rhs }
+    pub fn __truediv__(&self, rhs: Scalar) -> Self { self.clone() / rhs }
 }
 
 impl std::ops::Add for Vector {
@@ -128,9 +128,9 @@ impl std::ops::Mul<Vector> for Vector {
     }
 }
 
-impl std::ops::Mul<f64> for Vector {
+impl std::ops::Mul<Scalar> for Vector {
     type Output = Self;
-    fn mul(self, rhs: f64) -> Self::Output {
+    fn mul(self, rhs: Scalar) -> Self::Output {
         Self::from_point(
             Point {
                 x: self.point.x * rhs,
@@ -147,17 +147,17 @@ impl std::ops::MulAssign<Vector> for Vector {
     }
 }
 
-impl std::ops::MulAssign<f64> for Vector {
-    fn mul_assign(&mut self, rhs: f64) {
+impl std::ops::MulAssign<Scalar> for Vector {
+    fn mul_assign(&mut self, rhs: Scalar) {
         self.point.x *= rhs;
         self.point.y *= rhs;
         self.point.z *= rhs;
     }
 }
 
-impl std::ops::Div<f64> for Vector {
+impl std::ops::Div<Scalar> for Vector {
     type Output = Self;
-    fn div(self, rhs: f64) -> Self::Output {
+    fn div(self, rhs: Scalar) -> Self::Output {
         Self::from_point(
             Point {
                 x: self.point.x / rhs,
@@ -168,8 +168,8 @@ impl std::ops::Div<f64> for Vector {
     }
 }
 
-impl std::ops::DivAssign<f64> for Vector {
-    fn div_assign(&mut self, rhs: f64) {
+impl std::ops::DivAssign<Scalar> for Vector {
+    fn div_assign(&mut self, rhs: Scalar) {
         self.point.x /= rhs;
         self.point.y /= rhs;
         self.point.z /= rhs;

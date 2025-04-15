@@ -1,9 +1,11 @@
 mod point;
 mod vector;
 mod degree;
+mod scalar;
 
 use crate::{
     point::*,
+    scalar::*,
     vector::*,
     degree::*
 };
