@@ -1,5 +1,5 @@
 from physics import Scalar, Vector, Point
-from constants import M_Earth, v_Earth, ZERO, g, G
+from PhysicsSimulation.constants import g, G
 from typing import Self
 
 
