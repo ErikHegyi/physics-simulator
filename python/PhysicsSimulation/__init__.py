@@ -1,2 +1,2 @@
 from physics import *
-from . import constants
+from PhysicsSimulation.point_body import PointBody
