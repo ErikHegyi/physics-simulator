@@ -44,7 +44,7 @@ impl Vector {
     /// - `a: Point` - The point that the vector is pointing towards (the direction of the vector)
     /// - `b: Point` - The origin point of the vector
     #[staticmethod]
-    pub fn from_magnitude(magnitude: f64, a: &Point, b: &Point) -> Self {
+    pub fn from_magnitude(magnitude: Scalar, a: &Point, b: &Point) -> Self {
         // Calculate the distances between the points
         let dx: Scalar = b.x - a.x;
         let dy: Scalar = b.y - a.y;
@@ -56,12 +56,12 @@ impl Vector {
             y: Scalar::new(0.),
             z: Scalar::new(0.)
         };
-        let distance = Point::new(dx, dy, dz).distance(&origo);
+        let distance: Scalar = Point::new(dx, dy, dz).distance(&origo);
 
         // Calculate one unit of x, y and z
-        let unit_x = dx / distance;
-        let unit_y = dy / distance;
-        let unit_z = dz / distance;
+        let unit_x: Scalar = dx / distance;
+        let unit_y: Scalar = dy / distance;
+        let unit_z: Scalar = dz / distance;
 
         // Create a new vector
         Vector::new(

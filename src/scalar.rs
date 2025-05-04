@@ -1,14 +1,5 @@
-use std::fmt::{Display, Formatter};
-use std::ops::{
-    Add,
-    AddAssign,
-    Sub,
-    SubAssign,
-    Mul,
-    MulAssign,
-    Div,
-    DivAssign
-};
+use std::fmt::{Debug, Display, Formatter};
+use std::ops::{Add, AddAssign, Sub, SubAssign, Mul, MulAssign, Div, DivAssign, Neg};
 use crate::*;
 
 
@@ -17,6 +8,7 @@ use crate::*;
 #[derive(Clone, Copy, PartialEq, PartialOrd)]
 #[pyclass]
 pub struct Scalar {
+    #[pyo3(get, set)]
     pub value: f64
 }
 
@@ -27,10 +19,10 @@ impl Scalar {
         Self { value }
     }
 
-    pub fn __add__(&self, rhs: Self) -> Self { self.clone() + rhs }
-    pub fn __sub__(&self, rhs: Self) -> Self { self.clone() - rhs }
-    pub fn __mul__(&self, rhs: Self) -> Self { self.clone() * rhs }
-    pub fn __truediv__(&self, rhs: Self) -> Self { self.clone() / rhs }
+    pub fn __add__(&self, rhs: Self) -> Self { Self::new(self.value + rhs.value) }
+    pub fn __sub__(&self, rhs: Self) -> Self { Self::new(self.value - rhs.value) }
+    pub fn __mul__(&self, rhs: Self) -> Self { Self::new(self.value * rhs.value) }
+    pub fn __truediv__(&self, rhs: Self) -> Self { Self::new(self.value / rhs.value) }
 }
 
 
@@ -101,6 +93,15 @@ impl DivAssign for Scalar {
     }
 }
 
+impl Neg for Scalar {
+    type Output = Self;
+    fn neg(self) -> Self::Output {
+        Self::new(
+            -self.value
+        )
+    }
+}
+
 impl Display for Scalar {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         if self.value >= 1e4 {
@@ -108,5 +109,11 @@ impl Display for Scalar {
         } else {
             write!(f, "{}", self.value)
         }
+    }
+}
+
+impl Debug for Scalar {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{self}")
     }
 }
