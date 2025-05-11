@@ -15,7 +15,7 @@ pub struct Scalar {
 #[pymethods]
 impl Scalar {
     #[new]
-    pub fn new(value: f64) -> Self {
+    pub const fn new(value: f64) -> Self {
         Self { value }
     }
 
