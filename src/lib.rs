@@ -2,12 +2,14 @@ mod point;
 mod vector;
 mod degree;
 mod scalar;
+mod radiation;
 
 use crate::{
     point::*,
     scalar::*,
     vector::*,
-    degree::*
+    degree::*,
+    radiation::*
 };
 
 use pyo3::prelude::*;
@@ -19,5 +21,6 @@ fn physics(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<Vector>()?;
     m.add_class::<Scalar>()?;
     m.add_class::<Degree>()?;
+    m.add_class::<Radiation>()?;
     Ok(())
 }
