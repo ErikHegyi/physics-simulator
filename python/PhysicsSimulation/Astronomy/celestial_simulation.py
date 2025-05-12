@@ -1,9 +1,12 @@
+from OpenGL.raw.GL.VERSION.GL_1_0 import glMatrixMode, GL_MODELVIEW
+from OpenGL.raw.GLU import gluPerspective
+
 from PhysicsSimulation import Scalar, Vector, Constants
 from PhysicsSimulation import Astronomy
 from typing import Optional
 from PhysicsSimulation.Astronomy.celestial_graphics import CelestialWindow
 from glfw import *
-from OpenGL.GL import glClear, GL_COLOR_BUFFER_BIT, GL_DEPTH_BUFFER_BIT, glRotatef, glTranslatef, glLoadIdentity
+from OpenGL.GL import glClear, GL_COLOR_BUFFER_BIT, GL_DEPTH_BUFFER_BIT, glRotatef, glTranslatef, glLoadIdentity, GL_PROJECTION
 
 
 class CelestialSimulation:
@@ -128,6 +131,7 @@ class CelestialSimulation:
             if not self._time_stopped:
                 self.time += self.dt.value
                 self.calculate()
+
             glLoadIdentity()  # Reset the screen
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)  # Clear buffers
 
@@ -143,6 +147,8 @@ class CelestialSimulation:
             glRotatef(self.graphics.camera_rot[2], 0.0, 0.0, 1.0)
             glTranslatef(*self.graphics.camera_pos)
 
+            # TODO:
+            self.graphics.load_background_image()
             self.graphics.draw_objects()  # Draw the object
 
             swap_buffers(self.graphics.window)  # Swap front and back buffers

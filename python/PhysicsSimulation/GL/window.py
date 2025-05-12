@@ -5,6 +5,8 @@ from OpenGL.GL import *
 from OpenGL.GLU import *
 from OpenGL.GLUT import *
 from pathlib import Path
+from PIL import Image
+import numpy
 
 
 class Window:
@@ -14,7 +16,8 @@ class Window:
                  background_color: tuple[float, float, float, float],
                  title: Optional[str] = "OpenGL Window",
                  fov: int = 45,
-                 camera_location: tuple[float, float, float] = (0.0, 0.0, -5.0)) -> None:
+                 camera_location: tuple[float, float, float] = (0.0, 0.0, -5.0),
+                 background_image: Optional[Path] = None) -> None:
         self._width: int = width
         self._height: int = height
         self._fov: int = fov
@@ -22,6 +25,7 @@ class Window:
         self._bg_color: tuple[float, float, float, float] = background_color
         self._camera_pos: tuple[float, float, float] = camera_location
         self._camera_rot: tuple[float, float, float] = (0.0, 0.0, 0.0)
+        self._background_image: Optional[Path] = background_image
 
         # Create the window
         if not glfw.init():
@@ -36,6 +40,11 @@ class Window:
 
         glfw.make_context_current(self._window)
 
+        if self._background_image:
+            self._bg_texture_id = self.load_texture(self._background_image)
+        else:
+            self._bg_texture_id = None
+
         # Initialize OpenGL
         glClearColor(*self._bg_color)
         glEnable(GL_DEPTH_TEST)
@@ -48,6 +57,54 @@ class Window:
 
         # Initialize GLUT
         glutInit()
+
+
+    # TODO: Load a background image properly
+    def load_background_image(self) -> None:
+        if not self._bg_texture_id:
+            return
+
+        glDisable(GL_DEPTH_TEST)
+        glDepthMask(GL_FALSE)
+
+        glMatrixMode(GL_PROJECTION)  # Ensure you're in projection mode for ortho
+        glPushMatrix()
+        glLoadIdentity()
+        glOrtho(-1, 1, -1, 1, -1, 1)
+
+        glMatrixMode(GL_MODELVIEW)  # Switch back to modelview for drawing
+        glPushMatrix()
+        glLoadIdentity()
+
+        glEnable(GL_TEXTURE_2D)
+        glBindTexture(GL_TEXTURE_2D, self._bg_texture_id)
+
+        glBegin(GL_QUADS)
+        glTexCoord2f(0, 0)
+        glVertex2f(-1, -1)
+        glTexCoord2f(1, 0)
+        glVertex2f(1, -1)
+        glTexCoord2f(1, 1)
+        glVertex2f(1, 1)
+        glTexCoord2f(0, 1)
+        glVertex2f(-1, 1)
+        glEnd()
+
+        glDisable(GL_TEXTURE_2D)
+
+        glPopMatrix()  # Restore Modelview Matrix
+        glMatrixMode(GL_PROJECTION)  # Switch back to Projection Matrix
+        glPopMatrix()  # Restore Projection Matrix
+
+        glLoadIdentity()
+        glViewport(0, 0, self._width, self._height)
+        gluPerspective(self._fov, self._width / self._height, 0.1, 50.0)
+
+        glMatrixMode(GL_MODELVIEW)
+
+        glEnable(GL_DEPTH_TEST)
+        glDepthMask(GL_TRUE)
+
 
     @property
     def width(self) -> int:
@@ -64,6 +121,8 @@ class Window:
         glLoadIdentity()
         gluPerspective(self._fov, (width / height), 0.1, 50.0)
         glMatrixMode(GL_MODELVIEW)
+        self._width = width
+        self._height = height
 
     @staticmethod
     def draw_circle(coordinates: tuple[float, float],
@@ -94,7 +153,9 @@ class Window:
         glPushMatrix()
         glTranslatef(*coordinates)
         glColor4f(*color)  # Set the color
-        gluSphere(gluNewQuadric(), radius, subdivisions, subdivisions)  # Draw the sphere
+        quad = gluNewQuadric()
+        gluQuadricTexture(quad, GL_TRUE)
+        gluSphere(quad, radius, subdivisions, subdivisions)  # Draw the sphere
         glPopMatrix()
 
     @staticmethod
@@ -135,6 +196,28 @@ class Window:
             info: str = glGetProgramInfoLog(program).decode()
             raise GLerror(f"Unable to create shader program: {info}")
         self._shader_program = program
+
+    @staticmethod
+    def load_texture(file: Path) -> GLuint:
+        img: Image = Image.open(file)
+        image_data = img.tobytes("raw", "RGB", 0, -1)
+        width, height = img.size
+
+        texture_id = glGenTextures(1)
+        image_format = GL_RGB if img.mode == "RGB" else GL_RGBA
+
+        glBindTexture(GL_TEXTURE_2D, texture_id)
+
+        glPixelStorei(GL_UNPACK_ALIGNMENT, 1)
+        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT)
+        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE)
+        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST)
+        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST)
+        glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE)
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, image_format, GL_UNSIGNED_BYTE, image_data)
+
+        return texture_id
+
 
     @property
     def window(self):

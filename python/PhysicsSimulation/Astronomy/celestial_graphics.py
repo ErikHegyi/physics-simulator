@@ -3,6 +3,14 @@ from PhysicsSimulation import Astronomy
 from PhysicsSimulation import Constants
 
 
+STAR_TEXTURE = "textures/star.jpg"
+TERRESTRIAL = "textures/terrestrial.jpg"
+GAS_GIANT = "textures/gasgiant.jpg"
+SATELLITE = "textures/satellite.jpg"
+
+BG_IMAGE = "images/astronomy_bg_small.jpg"
+
+
 class CelestialWindow(Window):
     def __init__(self,
                  objects: list[Astronomy.Star | Astronomy.Planet],
@@ -19,7 +27,8 @@ class CelestialWindow(Window):
             background_color,
             title,
             fov,
-            camera_location
+            camera_location,
+            background_image=BG_IMAGE
         )
 
         # Enable lighting
@@ -28,6 +37,13 @@ class CelestialWindow(Window):
         glEnable(GL_LIGHT0)
         glColorMaterial(GL_FRONT_AND_BACK, GL_DIFFUSE)
 
+        # Enable texture
+        glEnable(GL_TEXTURE_2D)
+
+        self._star_texture: GLuint = self.load_texture(STAR_TEXTURE)
+        self._terrestrial_texture: GLuint = self.load_texture(TERRESTRIAL)
+        self._gas_giant_texture: GLuint = self.load_texture(GAS_GIANT)
+        self._satellite_texture: GLuint = self.load_texture(SATELLITE)
 
     def draw_objects(self) -> None:
         i: int = 0  # Keep track of the number of stars (light sources)
@@ -66,7 +82,14 @@ class CelestialWindow(Window):
 
                 glEnable(light)
                 glLight(light, GL_POSITION, (coordinates[0], coordinates[1], coordinates[2], 1.0))
-                glLightfv(light, GL_DIFFUSE, color)
+                glLightfv(light, GL_DIFFUSE, (
+                    0.7 + 0.3 * color[0],
+                    0.7 + 0.3 * color[1],
+                    0.7 + 0.3 * color[2],
+                    1.0
+                ))
+
+                glBindTexture(GL_TEXTURE_2D, self._star_texture)  # Set texture
 
                 i += 1
             else:
@@ -76,15 +99,23 @@ class CelestialWindow(Window):
                 glMaterialfv(GL_FRONT, GL_AMBIENT, (color[0] / 10, color[1] / 10, color[2] / 10, 1.0))
                 glMaterialfv(GL_FRONT, GL_DIFFUSE, color)  # Use the planet's color for diffuse reflection
 
+                match str(celestial.planet_type):
+                    case str(Astronomy.PlanetType.Satellite): glBindTexture(GL_TEXTURE_2D, self._satellite_texture)
+                    case str(Astronomy.PlanetType.Terrestrial): glBindTexture(GL_TEXTURE_2D, self._terrestrial_texture)
+                    case str(Astronomy.PlanetType.GasGiant): glBindTexture(GL_TEXTURE_2D, self._gas_giant_texture)
+                    case _: glBindTexture(GL_TEXTURE_2D, self._terrestrial_texture)
+
 
             # Calculate the radius on the screen
             radius: float = (celestial.radius / map_size).value * radius_multiplier
 
             glDisable(GL_LIGHTING)
+            glDisable(GL_TEXTURE_2D)
             self.draw_text(
                 (coordinates[0], coordinates[1] + radius, coordinates[2] + 0.1),
                 (1.0, 1.0, 1.0, 1.0),
                 celestial.name
             )
             glEnable(GL_LIGHTING)
+            glEnable(GL_TEXTURE_2D)
             self.draw_sphere(coordinates, radius, color, 64)
