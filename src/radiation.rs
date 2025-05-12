@@ -6,6 +6,7 @@ const LIGHTSPEED: Scalar = Scalar::new(299_792_458.0);
 
 
 #[pyclass]
+#[derive(Debug, Clone)]
 pub struct Radiation {
     #[pyo3(get)]
     pub wavelength: Scalar,  // Unit: m
