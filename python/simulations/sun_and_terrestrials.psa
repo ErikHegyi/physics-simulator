@@ -1,0 +1,32 @@
+dt: 2 h
+name: Solar System
+Sun:
+    type: Star
+    radius: 696 340 km
+    mass: 1 SM
+    velocity: 0
+    coordinates: (0, 0, 0)
+Mercury:
+    type: Rock Planet
+    radius: 2 440 km
+    mass: 3.3 * 10^22 kg
+    velocity: (0, 47.4 km/s, 0)
+    coordinates: (58 000 000 km, 0, 0)
+Venus:
+    type: Rock Planet
+    radius: 6 052 km
+    mass: 4.87 * 10^24 kg
+    velocity: (0, 35 km/s, 0)
+    coordinates: (0, 0, -108 000 000 km)
+Earth:
+    type: Rock Planet
+    radius: 6 378 km
+    mass: 5.97 * 10^24 kg
+    velocity: (-29 780 m/s, 0, 0)
+    coordinates: (0, 0, 1 AU)
+Mars:
+    type: Rock Planet
+    radius: 3 390 km
+    mass: 6.42 * 10^23 kg
+    velocity: (0, 0, -24.1 km/s)
+    coordinates: (228 000 000 km, 0, 0)
