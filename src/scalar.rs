@@ -18,11 +18,15 @@ impl Scalar {
     pub const fn new(value: f64) -> Self {
         Self { value }
     }
-
+    
+    pub fn pow(&self, n: Self) -> Self { Self::new(self.value.powf(n.value)) }
+    pub fn powi(&self, n: i32) -> Self { Self::new(self.value.powi(n)) }
     pub fn __add__(&self, rhs: Self) -> Self { Self::new(self.value + rhs.value) }
     pub fn __sub__(&self, rhs: Self) -> Self { Self::new(self.value - rhs.value) }
     pub fn __mul__(&self, rhs: Self) -> Self { Self::new(self.value * rhs.value) }
     pub fn __truediv__(&self, rhs: Self) -> Self { Self::new(self.value / rhs.value) }
+    pub fn __pow__(&self, power: i32, _mod: i32) -> Self { self.powi(power) }
+    pub fn __repr__(&self) -> String { format!("{self}") }
 }
 
 
@@ -116,4 +120,12 @@ impl Debug for Scalar {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         write!(f, "{self}")
     }
+}
+
+
+#[macro_export]
+macro_rules! scalar {
+    () => { Scalar::new(0.0) };
+    ($x: literal) => { Scalar::new(f64::from($x)) };
+    ($x: ident) => { Scalar::new(f64::from($x)) };
 }
