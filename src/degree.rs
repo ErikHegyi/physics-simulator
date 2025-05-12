@@ -1,4 +1,6 @@
 use pyo3::prelude::*;
+use pyo3::types::{PyDict, PyTuple};
+
 
 
 /// # Degree
@@ -20,6 +22,7 @@ pub struct Degree {
 #[pymethods]
 impl Degree {
     #[new]
+    #[pyo3(signature = (degree=0, minute=0, second=0))]
     pub const fn new(degree: i16, minute: i16, second: i16) -> Self {
         Self { degree, minute, second }
     }
