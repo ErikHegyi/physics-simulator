@@ -60,7 +60,7 @@ impl Vector {
 
         // Calculate one unit of x, y and z
         let unit_x: Scalar = dx / distance;
-        let unit_y: Scalar = dy / distance;
+        let unit_y: Scalar = dy / distance; 
         let unit_z: Scalar = dz / distance;
 
         // Create a new vector
@@ -72,20 +72,25 @@ impl Vector {
     }
 
     /// Calculate the magnitude of the vector
-    pub fn magnitude(&self) -> f64 {
+    pub fn magnitude(&self) -> Scalar {
         // Square of the magnitude in the horizontal plane
         let horizontal: f64 = self.point.x.value.powi(2) + self.point.z.value.powi(2);
 
         // Calculate the magnitude
         let magnitude: f64 = (horizontal + self.point.y.value.powi(2)).sqrt();
 
-        magnitude
+        Scalar::new(magnitude)
+    }
+    
+    pub fn mul(&self, other: Scalar) -> Self {
+        self.clone() * other
     }
 
     pub fn __add__(&self, rhs: Self) -> Self { self.clone() + rhs }
     pub fn __sub__(&self, rhs: Self) -> Self { self.clone() - rhs }
     pub fn __mul__(&self, rhs: Self) -> Self { self.clone() * rhs }
     pub fn __truediv__(&self, rhs: Scalar) -> Self { self.clone() / rhs }
+    pub fn __repr__(&self) -> String { format!("{self}") }
 }
 
 impl std::ops::Add for Vector {
@@ -199,12 +204,12 @@ impl std::fmt::Debug for Vector {
 
 impl std::fmt::LowerExp for Vector {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{:e}", self.magnitude())
+        write!(f, "{:e}", self.magnitude().value)
     }
 }
 
 impl std::fmt::UpperExp for Vector {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{:E}", self.magnitude())
+        write!(f, "{:E}", self.magnitude().value)
     }
 }
