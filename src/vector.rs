@@ -90,7 +90,7 @@ impl Vector {
     pub fn __sub__(&self, rhs: Self) -> Self { self.clone() - rhs }
     pub fn __mul__(&self, rhs: Self) -> Self { self.clone() * rhs }
     pub fn __truediv__(&self, rhs: Scalar) -> Self { self.clone() / rhs }
-    pub fn __repr__(&self) -> String { format!("{self}") }
+    pub fn __repr__(&self) -> String { format!("{self:?}") }
 }
 
 impl std::ops::Add for Vector {
