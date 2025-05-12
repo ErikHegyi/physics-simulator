@@ -1,9 +1,36 @@
 from pathlib import Path
-from PhysicsSimulation.Astronomy.celestial_body import Celestial, CelestialType
 from re import fullmatch, search, Match
-from PhysicsSimulation.constants import NULL_VECTOR, ORIGO, AU, LIGHTYEAR, M_Sun, c
-from PhysicsSimulation import Scalar, Vector, Point
+from PhysicsSimulation.Physics import Constants, Scalar, Vector, Point, PlanetType
 from PhysicsSimulation.Astronomy.celestial_simulation import CelestialSimulation
+from PhysicsSimulation import Astronomy
+
+
+def construct_planet(data: dict) -> Astronomy.Star | Astronomy.Planet:
+    match data["type"].lower():
+        case "gas" | "terrestrial" | "satellite":
+            planet_type: Astronomy.PlanetType
+            match data["type"]:
+                case "gas": planet_type = PlanetType.GasGiant
+                case "terrestrial": planet_type = PlanetType.Terrestrial
+                case _: planet_type = PlanetType.Satellite
+
+            return Astronomy.Planet(
+                name=data["name"],
+                velocity=data["velocity"],
+                coordinates=data["coordinates"],
+                mass=data["mass"],
+                radius=data["radius"],
+                planet_type=planet_type
+            )
+        case "star":
+            return Astronomy.Star(
+                name=data["name"],
+                velocity=data["velocity"],
+                coordinates=data["coordinates"],
+                mass=data["mass"],
+                radius=data["radius"]
+            )
+        case _: raise ValueError("Black Holes are not yet implemented")
 
 
 def convert_exponents(string: str) -> float:
@@ -59,8 +86,8 @@ def coordinate_component(component_str: str) -> Scalar:
             case "dm": num /= 10
             case "m": pass
             case "km": num *= 1000
-            case "au": num *= AU.value
-            case "ly": num *= LIGHTYEAR.value
+            case "au": num *= Constants.AU.value
+            case "ly": num *= Constants.LIGHTYEAR.value
 
         return Scalar(num)
 
@@ -104,18 +131,17 @@ def read(path: Path) -> CelestialSimulation:
         # New planet
         elif fullmatch(r"^\w+:\s*$", line):
             if last_planet:
-                values["celestials"].append(last_planet)  # Add the planet
+                values["celestials"].append(construct_planet(last_planet))  # Add the planet
 
             # Reset the planet
-            last_planet = Celestial(
-                name="",
-                celestial_type=CelestialType.RockPlanet,
-                velocity=NULL_VECTOR,
-                coordinates=ORIGO,
-                mass=Scalar(1),
-                radius=Scalar(1)
-            )
-            last_planet.name = search(r"(\w+):\s*", line).group(1)  # Set the name
+            last_planet = {
+                "name": search(r"(\w+):\s*", line).group(1),
+                "type": "Terrestrial",
+                "velocity": Constants.NULL_VECTOR,
+                "coordinates": Constants.ORIGO,
+                "mass": Scalar(1),
+                "radius": Scalar(1)
+            }
 
         # Planet properties
         elif fullmatch(r"^\s+(\w+):\s*([-()\w ,^/\.*]+)$", line):
@@ -124,10 +150,11 @@ def read(path: Path) -> CelestialSimulation:
 
             if key == "type":
                 match value.strip().lower().replace(' ', ''):
-                    case "blackhole": last_planet.type = CelestialType.BlackHole
-                    case "gasplanet" | "gasgiant": last_planet.type = CelestialType.GasPlanet
-                    case "star": last_planet.type = CelestialType.Star
-                    case _: last_planet.type = CelestialType.RockPlanet
+                    case "blackhole": last_planet["type"] = "blackhole"
+                    case "gasplanet" | "gasgiant": last_planet["type"] = "gas"
+                    case "star": last_planet["type"] = "star"
+                    case "satellite": last_planet["type"] = "satellite"
+                    case _: last_planet["type"] = "terrestrial"
             elif key == "radius":
                 value = value.strip().replace(' ', '')
                 if not fullmatch(r"\d+\w+", value):
@@ -146,7 +173,7 @@ def read(path: Path) -> CelestialSimulation:
                     case "ly": num *= LIGHTYEAR.value
                     case _: continue
 
-                last_planet.radius = Scalar(num)
+                last_planet["radius"] = Scalar(num)
             elif key == "mass":
                 value = value.strip().replace(' ', '')
                 if not fullmatch(r"([\d\.*^]+)(\w+)", value):
@@ -161,22 +188,22 @@ def read(path: Path) -> CelestialSimulation:
                     case "g": num /= 1000
                     case "kg": pass
                     case "t": num *= 1000
-                    case "sm": num *= M_Sun.value
+                    case "sm": num *= Constants.SOLAR_MASS.value
                     case _: continue
 
-                last_planet.mass = Scalar(num)
+                last_planet["mass"] = Scalar(num)
             elif key == "velocity":
                 value = value.strip().replace(' ', '')
                 if not fullmatch(r"\((-?\d+[\w\./]*),(-?\d+[\w\./]*),(-?\d+[\w\./]*)\)", value):
                     continue
 
-                last_planet.velocity = read_in_velocity(value)
+                last_planet["velocity"] = read_in_velocity(value)
             elif key == "coordinates":
                 value = value.strip().replace(' ', '')
                 if not fullmatch(r"\((-?\d+[\w\.]*),(-?\d+[\w\.]*),(-?\d+[\w\.]*)\)", value):
                     continue
 
-                last_planet.coordinates = read_in_coordinates(value)
+                last_planet["coordinates"] = read_in_coordinates(value)
     if last_planet:
-        values["celestials"].append(last_planet)
+        values["celestials"].append(construct_planet(last_planet))
     return CelestialSimulation(**values)

@@ -1,6 +1,5 @@
-from physics import Scalar, Vector
-from PhysicsSimulation.Astronomy.celestial_body import Celestial
-from PhysicsSimulation.constants import HOUR, NULL_VECTOR
+from PhysicsSimulation import Scalar, Vector, Constants
+from PhysicsSimulation import Astronomy
 from typing import Optional
 from PhysicsSimulation.Astronomy.celestial_graphics import CelestialWindow
 from glfw import *
@@ -9,12 +8,12 @@ from OpenGL.GL import glClear, GL_COLOR_BUFFER_BIT, GL_DEPTH_BUFFER_BIT, glRotat
 
 class CelestialSimulation:
     def __init__(self,
-                 celestials: list[Celestial],
-                 dt: Scalar = HOUR,
+                 celestials: list[Astronomy.Star | Astronomy.Planet],
+                 dt: Scalar = Constants.HOUR,
                  name: str = "Astronomical Simulation") -> None:
         self.dt: Scalar = dt
         self.time: int = 0
-        self.celestials: list[Celestial] = celestials
+        self.celestials: list[Astronomy.Star | Astronomy.Planet] = celestials
         self.name: str = name
 
         self._time_stopped: bool = False
@@ -41,15 +40,15 @@ class CelestialSimulation:
 
     def calculate(self) -> None:
         # Calculate the forces applied to each object
-        forces: list[Vector] = [NULL_VECTOR] * len(self.celestials)
+        forces: list[Vector] = [Constants.NULL_VECTOR] * len(self.celestials)
         for a in range(len(self.celestials)):
             for b in range(len(self.celestials)):
                 if a != b:
-                    forces[a] += self.celestials[a].gravitational_force(self.celestials[b])
+                    forces[a] += self.celestials[a].gravitational_force(self.celestials[b].point_body)
         # Move the object based on the force applied to it and its initial velocity
         for i, planet in enumerate(self.celestials):
             planet.advance(self.dt)
-            planet.velocity += planet.acceleration(forces[i]).mul(self.dt)
+            planet.set_velocity(planet.velocity() + planet.acceleration(forces[i]).mul(self.dt))
 
     def _movement(self, _, key, __, action, ___) -> None:
         speed: float = 0.1

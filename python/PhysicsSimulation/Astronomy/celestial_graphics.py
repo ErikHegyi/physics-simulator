@@ -1,18 +1,18 @@
 from PhysicsSimulation.GL.window import *
-from PhysicsSimulation.Astronomy.celestial_body import CelestialType, Celestial
-from PhysicsSimulation.constants import ORIGO
+from PhysicsSimulation import Astronomy
+from PhysicsSimulation import Constants
 
 
 class CelestialWindow(Window):
     def __init__(self,
-                 objects: list[Celestial],
+                 objects: list[Astronomy.Star | Astronomy.Planet],
                  width: int,
                  height: int,
                  background_color: tuple[float, float, float, float],
                  title: Optional[str] = "OpenGL Window",
                  fov: int = 45,
                  camera_location: tuple[float, float, float] = (0.0, 0.0, -5.0)) -> None:
-        self._objects: list[Celestial] = objects
+        self._objects: list[Astronomy.Star | Astronomy.Planet] = objects
         super().__init__(
             width,
             height,
@@ -33,27 +33,34 @@ class CelestialWindow(Window):
         i: int = 0  # Keep track of the number of stars (light sources)
 
         # Calculate the size of the map
-        map_size: int = max(self._objects, key=lambda x: x.coordinates.distance(ORIGO).value).coordinates.distance(ORIGO)
+        map_size: int = max(
+            self._objects,
+            key=lambda x: x.coordinates().distance(Constants.ORIGO).value
+        ).coordinates().distance(Constants.ORIGO)
         for celestial in self._objects:
-            color: tuple[float, float, float, float] = (1.0, 0.8, 0.5, 1.0)
             radius_multiplier: int = 100  # The system is so large, that the planets could not be seen without this
 
-            match celestial.type:  # Get the color based on the celestial type
-                case CelestialType.BlackHole: color = (0.0, 0.0, 0.0, 1.0)
-                case CelestialType.Star: color = (1.0, 0.8, 0.5, 1.0)
-                case CelestialType.RockPlanet:
+            # Get the color based on the celestial type
+            if isinstance(celestial, Astronomy.Star):  # Star
+                color = celestial.color()
+            elif isinstance(celestial, Astronomy.Planet):  # Planet
+                if celestial.planet_type == Astronomy.PlanetType.Terrestrial:
                     color = (0.2, 0.2, 0.2, 1.0)
-                case CelestialType.GasPlanet:
+                elif celestial.planet_type == Astronomy.PlanetType.Satellite:
+                    color = (0.2, 0.2, 0.2, 1.0)
+                else:
                     color = (0.5, 0.5, 0.8, 1.0)
+            else:  # Black hole
+                color = (0.0, 0.0, 0.0, 1.0)
 
             # Calculate the coordinates on the screen
             coordinates: tuple[float, float, float] = (
-                (celestial.coordinates.x / map_size).value,
-                (celestial.coordinates.y / map_size).value,
-                (celestial.coordinates.z / map_size).value
+                (celestial.coordinates().x / map_size).value,
+                (celestial.coordinates().y / map_size).value,
+                (celestial.coordinates().z / map_size).value
             )
 
-            if celestial.type == CelestialType.Star:
+            if isinstance(celestial, Astronomy.Star):
                 light = GL_LIGHT0 + i  # Handle multiple light sources
                 glMaterialfv(GL_FRONT, GL_EMISSION, color)
 
@@ -80,4 +87,4 @@ class CelestialWindow(Window):
                 celestial.name
             )
             glEnable(GL_LIGHTING)
-            self.draw_sphere(coordinates, radius, color)
+            self.draw_sphere(coordinates, radius, color, 64)

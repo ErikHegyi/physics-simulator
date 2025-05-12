@@ -1,2 +1,1 @@
-from physics import *
-from PhysicsSimulation.point_body import PointBody
+from PhysicsSimulation.Physics import Constants, Scalar, Vector, Point, PointBody, Radiation, Degree
