@@ -40,19 +40,22 @@ class CelestialWindow(Window):
         # Enable texture
         glEnable(GL_TEXTURE_2D)
 
+        # Load the textures
         self._star_texture: GLuint = self.load_texture(STAR_TEXTURE)
         self._terrestrial_texture: GLuint = self.load_texture(TERRESTRIAL)
         self._gas_giant_texture: GLuint = self.load_texture(GAS_GIANT)
         self._satellite_texture: GLuint = self.load_texture(SATELLITE)
 
+        # Calculate the map size
+        self._map_size: int = max(
+            self._objects,
+            key=lambda x: x.coordinates().distance(Constants.ORIGO).value
+        ).coordinates().distance(Constants.ORIGO)
+
     def draw_objects(self) -> None:
         i: int = 0  # Keep track of the number of stars (light sources)
 
         # Calculate the size of the map
-        map_size: int = max(
-            self._objects,
-            key=lambda x: x.coordinates().distance(Constants.ORIGO).value
-        ).coordinates().distance(Constants.ORIGO)
         for celestial in self._objects:
             radius_multiplier: int = 100  # The system is so large, that the planets could not be seen without this
 
@@ -71,9 +74,9 @@ class CelestialWindow(Window):
 
             # Calculate the coordinates on the screen
             coordinates: tuple[float, float, float] = (
-                (celestial.coordinates().x / map_size).value,
-                (celestial.coordinates().y / map_size).value,
-                (celestial.coordinates().z / map_size).value
+                (celestial.coordinates().x / self._map_size).value,
+                (celestial.coordinates().y / self._map_size).value,
+                (celestial.coordinates().z / self._map_size).value
             )
 
             if isinstance(celestial, Astronomy.Star):
@@ -107,7 +110,7 @@ class CelestialWindow(Window):
 
 
             # Calculate the radius on the screen
-            radius: float = (celestial.radius / map_size).value * radius_multiplier
+            radius: float = (celestial.radius / self._map_size).value * radius_multiplier
 
             glDisable(GL_LIGHTING)
             glDisable(GL_TEXTURE_2D)
