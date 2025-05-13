@@ -3,7 +3,7 @@ from PhysicsSimulation import Astronomy
 from PhysicsSimulation import Constants
 
 
-STAR_TEXTURE = "textures/star.jpg"
+STAR_TEXTURE = "textures/star_grayscale.jpg"
 TERRESTRIAL = "textures/terrestrial.jpg"
 GAS_GIANT = "textures/gasgiant.jpg"
 SATELLITE = "textures/satellite.jpg"
