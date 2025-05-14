@@ -10,6 +10,7 @@ from OpenGL.GL import glClear, GL_COLOR_BUFFER_BIT, GL_DEPTH_BUFFER_BIT, glRotat
 
 
 class CelestialSimulation:
+    REDRAW_AMOUNT: int = 100  # After how many calculations should the program redraw the window
     def __init__(self,
                  celestials: list[Astronomy.Star | Astronomy.Planet],
                  dt: Scalar = Constants.HOUR,
@@ -26,6 +27,8 @@ class CelestialSimulation:
         self._mouse_pos: tuple[float, float] = None
 
         self.graphics: Optional[CelestialWindow] = None
+
+        self._i: int = 0
 
     def initialize_graphics(self) -> None:
         self.graphics = CelestialWindow(
@@ -131,6 +134,12 @@ class CelestialSimulation:
             if not self._time_stopped:
                 self.time += self.dt.value
                 self.calculate()
+
+            if self._i < self.REDRAW_AMOUNT:
+                self._i += 1
+                continue
+            else:
+                self._i = 0
 
             glLoadIdentity()  # Reset the screen
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)  # Clear buffers
