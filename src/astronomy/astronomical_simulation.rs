@@ -286,3 +286,167 @@ impl AstronomicalSimulation {
         }
     }
 }
+
+
+#[macro_export]
+macro_rules! astronomical_simulation {
+    (
+        $( $celestial: expr ),* $(,)? 
+    ) => {
+        AstronomicalSimulation::new(
+            scalar!(1),
+            {
+                let mut vector: Vec<Box<dyn Celestial + Sync>> = Vec::new();
+                $(
+                    vector.push(Box::new($celestial));
+                )*
+                vector
+            },
+            String::from("Simulation"),
+            0.02,
+            false
+        )
+    };
+    (
+        $dt: expr,
+        $( $celestial: expr ),* $(,)?
+    ) => {
+        AstronomicalSimulation::new(
+            scalar!($dt),
+            {
+                let mut vector: Vec<Box<dyn Celestial + Sync>> = Vec::new();
+                $(
+                    vector.push(Box::new($celestial));
+                )*
+                vector
+            },
+            String::from("Simulation"),
+            0.02,
+            false
+        )
+    };
+    (
+        $dt: expr,
+        $name: expr,
+        $( $celestial: expr ),* $(,)?
+    ) => {
+        AstronomicalSimulation::new(
+            scalar!($dt),
+            {
+                let mut vector: Vec<Box<dyn Celestial + Sync>> = Vec::new();
+                $(
+                    vector.push(Box::new($celestial));
+                )*
+                vector
+            },
+            String::from($name),
+            0.02,
+            false
+        )
+    };
+    (
+        $dt: expr,
+        $name: expr,
+        $move_speed: expr,
+        $( $celestial: expr ),* $(,)?
+    ) => {
+        AstronomicalSimulation::new(
+            scalar!($dt),
+            {
+                let mut vector: Vec<Box<dyn Celestial + Sync>> = Vec::new();
+                $(
+                    vector.push(Box::new($celestial));
+                )*
+                vector
+            },
+            String::from($name),
+            f32::from($move_speed),
+            false
+        )
+    };
+    (
+        $dt: expr,
+        $name: expr,
+        $move_speed: expr,
+        $multi_processor: expr, $( $celestial: expr ),* $(,)?
+    ) => {
+        AstronomicalSimulation::new(
+            scalar!($dt),
+            {
+                let mut vector: Vec<Box<dyn Celestial + Sync>> = Vec::new();
+                $(
+                    vector.push(Box::new($celestial));
+                )*
+                vector
+            },
+            String::from($name),
+            f32::from($move_speed),
+            $multi_processor
+        )
+    };
+    (
+        $celestials: expr
+    ) => {
+        AstronomicalSimulation::new(
+            scalar!(1),
+            $celestials,
+            String::from("Simulation"),
+            0.02,
+            false
+        )
+    };
+    (
+        $dt: expr,
+        $celestials: expr
+    ) => {
+        AstronomicalSimulation::new(
+            scalar!($dt),
+            $celestials,
+            String::from("Simulation"),
+            0.02,
+            false
+        )
+    };
+    (
+        $dt: expr,
+        $celestials: expr,
+        $name: expr
+    ) => {
+        AstronomicalSimulation::new(
+            scalar!($dt),
+            $celestials,
+            String::from($name),
+            0.02,
+            false
+        )
+    };
+    (
+        $dt: expr,
+        $celestials: expr,
+        $name: expr,
+        $move_speed: expr
+    ) => {
+        AstronomicalSimulation::new(
+            scalar!($dt),
+            $celestials,
+            String::from($name),
+            f32::from($move_speed),
+            false
+        )
+    };
+    (
+        $dt: expr,
+        $celestials: expr,
+        $name: expr,
+        $move_speed: expr,
+        $multi_processor: expr
+    ) => {
+        AstronomicalSimulation::new(
+            scalar!($dt),
+            $celestials,
+            String::from($name),
+            f32::from($move_speed),
+            $multi_processor
+        )
+    };
+}

@@ -26,91 +26,12 @@ use graphics::window::*;
 
 
 fn main() {
-    let planets: Vec<Box<dyn Celestial + Sync + 'static>> = vec![
-        Box::new(
-            Star::new(
-                String::from("Sun"),
-                Vector::new(ZERO, ZERO, ZERO),
-                Point::new(ZERO, ZERO, ZERO),
-                Scalar::new(2e30), // Approximate mass of Sun in kg (1 SM ~ 1.989e30 kg)
-                Scalar::new(696_340_000.0), // radius in km
-            )
-        ),
-
-        // Mercury
-        Box::new(Planet::new(
-            String::from("Mercury"),
-            Vector::new(
-                ZERO,
-                Scalar::new(47_400.0), // 47.4 km/s converted to m/s
-                ZERO,
-            ),
-            Point::new(
-                Scalar::new(58_000_000_000.0), // 58 million km to meters
-                ZERO,
-                ZERO,
-            ),
-            Scalar::new(3.3e22), // mass in kg
-            Scalar::new(2_440_000.0), // radius in km
-            PlanetType::Terrestrial,
-        )),
-    
-        // Venus
-        Box::new(Planet::new(
-            String::from("Venus"),
-            Vector::new(
-                ZERO,
-                Scalar::new(35_000.0), // 35 km/s to m/s
-                ZERO,
-            ),
-            Point::new(
-                ZERO,
-                ZERO,
-                Scalar::new(-108_000_000_000.0), // -108 million km to meters
-            ),
-            Scalar::new(4.87e24),
-            Scalar::new(6_052_000.0),
-            PlanetType::Terrestrial,
-        )),
-    
-        // Earth
-        Box::new(Planet::new(
-            String::from("Earth"),
-            Vector::new(
-                Scalar::new(-29_780.0), // -29,780 m/s
-                ZERO,
-                ZERO,
-            ),
-            Point::new(
-                ZERO,
-                ZERO,
-                AU, // 1 AU in meters (assuming you have this helper)
-            ),
-            Scalar::new(5.97e24),
-            Scalar::new(6_378_000.0),
-            PlanetType::Terrestrial,
-        )),
-    
-        // Mars
-        Box::new(Planet::new(
-            String::from("Mars"),
-            Vector::new(
-                ZERO,
-                ZERO,
-                Scalar::new(-24_100.0), // -24.1 km/s to m/s
-            ),
-            Point::new(
-                Scalar::new(228_000_000_000.0), // 228 million km to meters
-                ZERO,
-                ZERO,
-            ),
-            Scalar::new(6.42e23),
-            Scalar::new(3_390_000.0),
-            PlanetType::Terrestrial
-            ))
-    ]; 
-    let mut sim = AstronomicalSimulation::new(
-        scalar!(1), planets, String::from("Simulation"), 0.02, false
+    let mut sim = astronomical_simulation!(
+        star!("Sun", vector!(0), (0, 0, 0), 2e30, 696_340_000),
+        planet!("Mercury", vector!(0, 47_400, 0), point!(58e9, 0, 0), 3.3e22, 2_440_000),
+        planet!("Venus", (0, 35e3, 0), (0, 0, -108e9), 4.87e24, 6052e3),
+        planet!("Earth", (-29780, 0, 0), (0, 0, AU), 5.97e24, 6378e3),
+        planet!("Mars", (0, 0, -24100), (228e9, 0, 0), 6.42e23, 3390e3),
     );
     sim.run();
 }
