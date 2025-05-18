@@ -19,6 +19,13 @@ impl Scalar {
 }
 
 
+impl<P> From<P> for Scalar where f64: From<P> {
+    fn from(value: P) -> Self {
+        Scalar::new(f64::from(value))
+    }
+}
+
+
 impl Add for Scalar {
     type Output = Self;
     fn add(self, rhs: Self) -> Self::Output {
@@ -115,7 +122,7 @@ impl Debug for Scalar {
 #[macro_export]
 macro_rules! scalar {
     () => { Scalar::new(0.0) };
-    ($x: literal) => { Scalar::new(f64::from($x)) };
-    ($x: ident) => { Scalar::new(f64::from($x)) };
-    ($x: expr) => { Scalar::new(f64::from($x)) };
+    ($x: literal) => { Scalar::from($x) };
+    ($x: ident) => { Scalar::from($x) };
+    ($x: expr) => { Scalar::from($x) };
 }
