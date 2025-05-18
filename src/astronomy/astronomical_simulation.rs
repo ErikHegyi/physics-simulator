@@ -62,7 +62,7 @@ impl AstronomicalSimulation {
             time_stopped: false,
             move_speed,
             window: Window::new(
-                    800,
+                    600,
                     600,
                     [0.0, 0.0, 0.0, 1.0],
                     "Astronomical Simulation",
