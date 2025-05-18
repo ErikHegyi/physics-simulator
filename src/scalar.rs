@@ -117,4 +117,5 @@ macro_rules! scalar {
     () => { Scalar::new(0.0) };
     ($x: literal) => { Scalar::new(f64::from($x)) };
     ($x: ident) => { Scalar::new(f64::from($x)) };
+    ($x: expr) => { Scalar::new(f64::from($x)) };
 }
