@@ -27,5 +27,5 @@ After these calculations are done, the velocities are updated:\
 $$v_{celestial} = v_{celestial} + \frac{F_{celestial}}{m_{celestial}}\Delta t$$
 
 ### Images
-![star and planet](https://github.com/ErikHegyi/physics-simulator/tree/main/images/documentation/astronomy_1.png)
-![blue star and planet](https://github.com/ErikHegyi/physics-simulator/tree/main/images/documentation/astronomy_2.png)
+![star and planet](https://github.com/ErikHegyi/physics-simulator/tree/main/images/documentation/astronomy_1.png?raw=true)
+![blue star and planet](https://github.com/ErikHegyi/physics-simulator/tree/main/images/documentation/astronomy_2.png?raw=true)
