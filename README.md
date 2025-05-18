@@ -24,4 +24,8 @@ $$F_a = F_a + G\frac{m_am_b}{r_{ab}^2}$$\
 This calculates the gravitational force acting on A from B.
 This calculation is performed on all objects, and the resulting forces are added together using vector algebra.
 After these calculations are done, the velocities are updated:\
-$$v_{celestial} = v_{celestial} + \frac{F_{celestial}}{m_{celestial}}\Delta t$$ 
+$$v_{celestial} = v_{celestial} + \frac{F_{celestial}}{m_{celestial}}\Delta t$$
+
+### Images
+![star and planet](https://github.com/ErikHegyi/physics-simulator/tree/main/images/documentation/astronomy_1.png)
+![blue star and planet](https://github.com/ErikHegyi/physics-simulator/tree/main/images/documentation/astronomy_2.png)
