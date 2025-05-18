@@ -206,4 +206,9 @@ macro_rules! vector {
             scalar!($x), scalar!($y), scalar!($z)
         )
     };
+    (($x: expr, $y: expr, $z: expr)) => {
+        Vector::new(
+            scalar!($x), scalar!($y), scalar!($z)
+        )
+    }
 }
