@@ -1,3 +1,4 @@
+use std::fmt::{Display, Formatter};
 use crate::*;
 
 
@@ -6,6 +7,30 @@ pub enum PlanetType {
     Terrestrial,
     GasGiant,
     Satellite
+}
+
+
+impl<P> From<P> for PlanetType where String: From<P> {
+    fn from(value: P) -> Self {
+        let string: String = String::from(value).to_lowercase().replace(' ', "");
+        match string.as_str() {
+            "terrestrial" => Self::Terrestrial,
+            "gasgiant" => Self::GasGiant,
+            "satellite" => Self::GasGiant,
+            _ => panic!("Unknown planet type")
+        }
+    }
+}
+
+
+impl Display for PlanetType {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}", match *self {
+            Self::Terrestrial => "Terrestrial",
+            Self::GasGiant => "Gas Giant",
+            Self::Satellite => "Satellite"
+        })
+    }
 }
 
 pub struct Planet {
@@ -88,3 +113,173 @@ impl Celestial for Planet {
 
 
 unsafe impl Sync for Planet {}
+
+
+
+#[macro_export]
+macro_rules! planet {
+    (
+        $name: expr,
+        $velocity: tt,
+        $coordinates: tt,
+        $mass: expr,
+        $radius: expr
+    ) => {
+        Planet::new(
+            String::from($name),
+            vector!($velocity),
+            point!($coordinates),
+            scalar!($mass),
+            scalar!($radius),
+            PlanetType::Terrestrial
+        )
+    };
+    (
+        $name: expr,
+        $velocity: expr,
+        $coordinates: tt,
+        $mass: expr,
+        $radius: expr
+    ) => {
+        Planet::new(
+            String::from($name),
+            $velocity,
+            point!($coordinates),
+            scalar!($mass),
+            scalar!($radius)
+        )
+    };
+    (
+        $name: expr,
+        $velocity: tt,
+        $coordinates: expr,
+        $mass: expr,
+        $radius: expr
+    ) => {
+        Planet::new(
+            String::from($name),
+            vector!($velocity),
+            $coordinates,
+            scalar!($mass),
+            scalar!($radius)
+        )
+    };
+    (
+        $name: expr,
+        $velocity: expr,
+        $coordinates: expr,
+        $mass: expr,
+        $radius: expr
+    ) => {
+        Planet::new(
+            String::from($name),
+            $velocity,
+            $coordinates,
+            scalar!($mass),
+            scalar!($radius),
+            PlanetType::Terrestrial
+        )
+    };
+    (
+        $name: expr,
+        $velocity: tt,
+        $coordinates: tt,
+        $mass: expr,
+        $radius: expr,
+        $planet_type: literal
+    ) => {
+        Planet::new(
+            String::from($name),
+            vector!($velocity),
+            point!($coordinates),
+            scalar!($mass),
+            scalar!($radius),
+            PlanetType::from($planet_type)
+        )
+    };
+    (
+        $name: expr,
+        $velocity: tt,
+        $coordinates: tt,
+        $mass: expr,
+        $radius: expr,
+        $planet_type: expr
+    ) => {
+        Planet::new(
+            String::from($name),
+            vector!($velocity),
+            point!($coordinates),
+            scalar!($mass),
+            scalar!($radius),
+            $planet_type
+        )
+    };
+    (
+        $name: expr,
+        $velocity: expr,
+        $coordinates: tt,
+        $mass: expr,
+        $radius: expr,
+        $planet_type: literal
+    ) => {
+        Planet::new(
+            String::from($name),
+            $velocity,
+            point!($coordinates),
+            scalar!($mass),
+            scalar!($radius),
+            PlanetType::from($planet_type)
+        )
+    };
+    (
+        $name: expr,
+        $velocity: expr,
+        $coordinates: tt,
+        $mass: expr,
+        $radius: expr,
+        $planet_type: expr
+    ) => {
+        Planet::new(
+            String::from($name),
+            $velocity,
+            point!($coordinates),
+            scalar!($mass),
+            scalar!($radius),
+            $planet_type
+        )
+    };
+    (
+        $name: expr,
+        $velocity: tt,
+        $coordinates: expr,
+        $mass: expr,
+        $radius: expr,
+        $planet_type: literal
+    ) => {
+        Planet::new(
+            String::from($name),
+            vector!($velocity),
+            $coordinates,
+            scalar!($mass),
+            scalar!($radius),
+            PlanetType::from($planet_type)
+        )
+    };
+    (
+        $name: expr,
+        $velocity: tt,
+        $coordinates: expr,
+        $mass: expr,
+        $radius: expr,
+        $planet_type: expr
+    ) => {
+        Planet::new(
+            String::from($name),
+            vector!($velocity),
+            $coordinates,
+            scalar!($mass),
+            scalar!($radius),
+            $planet_type
+        )
+    };
+}
