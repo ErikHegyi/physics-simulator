@@ -122,3 +122,62 @@ impl Celestial for Star {
     #[inline]
     fn get_color(&self) -> [f64; 4] { self.color() }
 }
+
+
+#[macro_export]
+macro_rules! star {
+    (
+        $name: expr,
+        $velocity: tt,
+        $coordinates: tt,
+        $mass: expr,
+        $radius: expr
+    ) => {
+        Star::new(
+            String::from($name),
+            vector!($velocity),
+            point!($coordinates),
+            scalar!($mass),
+            scalar!($radius)
+        )
+    };
+    (
+        $name: expr,
+        $velocity: expr,
+        $coordinates: tt,
+        $mass: expr,
+        $radius: expr
+    ) => {
+        Star::new(
+            String::from($name),
+            $velocity,
+            point!($coordinates),
+            scalar!($mass),
+            scalar!($radius)
+        )
+    };
+    (
+        $name: expr,
+        $velocity: tt,
+        $coordinates: expr,
+        $mass: expr,
+        $radius: expr
+    ) => {
+        Star::new(
+            String::from($name),
+            vector!($velocity),
+            $coordinates,
+            scalar!($mass),
+            scalar!($radius)
+        )
+    };
+    (
+        $name: expr,
+        $velocity: expr,
+        $coordinates: expr,
+        $mass: expr,
+        $radius: expr
+    ) => {
+        Star::new(String::from($name), $velocity, $coordinates, scalar!($mass), scalar!($radius))
+    };
+}
