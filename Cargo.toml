@@ -8,4 +8,8 @@ name = "physics_simulator"
 crate-type = ["cdylib"]
 
 [dependencies]
-pyo3 = { version = "0.24.0", features = ["abi3-py312", "extension-module"]}
+gl = "0.14.0"
+glfw = "0.59.0"
+glu-sys = "0.1.4"
+image = "0.25.6"
+rayon = "1.10.0"

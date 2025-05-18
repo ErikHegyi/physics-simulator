@@ -1,26 +1,16 @@
-use pyo3::prelude::*;
-
-
 /// # Degree
 /// A geometrical degree
 /// ## Fields
 /// - `degree`
 /// - `minute`
 /// - `second`
-#[pyclass]
 pub struct Degree {
-    #[pyo3(get, set)]
     pub degree: i16,
-    #[pyo3(get, set)]
     pub minute: i16,
-    #[pyo3(get, set)]
     pub second: i16
 }
 
-#[pymethods]
 impl Degree {
-    #[new]
-    #[pyo3(signature = (degree=0, minute=0, second=0))]
     pub const fn new(degree: i16, minute: i16, second: i16) -> Self {
         Self { degree, minute, second }
     }
@@ -35,7 +25,6 @@ impl Degree {
     /// Create a degree from a floating point number.
     /// For example:
     /// `180.5°` -> `180° 30' 0"`
-    #[staticmethod]
     pub fn from_float(float: f64) -> Self {
         // Convert the float to seconds
         let seconds: i128 = (float * 3600.).round() as i128;
@@ -56,7 +45,6 @@ impl Degree {
     }
 
     /// Convert radians to degrees
-    #[staticmethod]
     pub fn from_radian(radian: f64) -> Self {
         Self::from_float(radian.to_degrees())
     }
@@ -64,11 +52,8 @@ impl Degree {
     pub fn sin(&self) -> f64 { self.to_radian().sin() }
     pub fn cos(&self) -> f64 { self.to_radian().cos() }
     pub fn tan(&self) -> f64 { self.to_radian().tan() }
-    #[staticmethod]
     pub fn asin(ratio: f64) -> Self { Self::from_radian(ratio.asin()) }
-    #[staticmethod]
     pub fn acos(ratio: f64) -> Self { Self::from_radian(ratio.acos()) }
-    #[staticmethod]
     pub fn atan(ratio: f64) -> Self { Self::from_radian(ratio.atan()) }
 }
 

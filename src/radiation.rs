@@ -1,27 +1,18 @@
-use pyo3::prelude::*;
 use crate::scalar::Scalar;
 
 
 const LIGHTSPEED: Scalar = Scalar::new(299_792_458.0);
 
 
-#[pyclass]
 #[derive(Debug, Clone)]
 pub struct Radiation {
-    #[pyo3(get)]
     pub wavelength: Scalar,  // Unit: m
-
-    #[pyo3(get)]  // Unit: s^-1
-    pub frequency: Scalar,
-
-    #[pyo3(get)]
+    pub frequency: Scalar,  // Unit: s^-1
     pub temperature: Scalar  // Unit: K
 }
 
 
-#[pymethods]
 impl Radiation {
-    #[new]
     pub fn new(temperature: Scalar) -> Self {
         // Calculate the wavelength
         // T = 2.9 * 10^6 / lambda (in nm) => lambda (in nm) = 2.9 * 10^6 / T
@@ -34,7 +25,6 @@ impl Radiation {
         Self { wavelength, frequency, temperature}
     }
 
-    #[staticmethod]
     pub fn from_wavelength(wavelength: Scalar) -> Self {
         // Calculate the temperature
         // T = 2.9 * 10^6 / lambda (in nm)
@@ -42,7 +32,6 @@ impl Radiation {
         Self::new(temperature)
     }
 
-    #[staticmethod]
     pub fn from_frequency(frequency: Scalar) -> Self {
         // Calculate the wavelength
         // lambda = c/f
@@ -50,7 +39,6 @@ impl Radiation {
         Self::from_wavelength(wavelength)
     }
     
-    #[staticmethod]
     pub fn color_from_wavelength(wavelength: Scalar) -> [f64; 4] {
         let wavelength: f64 = wavelength.value;
         match wavelength {

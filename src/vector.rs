@@ -1,6 +1,4 @@
-use crate::{
-    *
-};
+use crate::*;
 
 
 /// # Vector
@@ -14,21 +12,16 @@ use crate::{
 /// - Subtraction
 /// - Multiplication
 #[derive(Clone, Copy, PartialEq, PartialOrd)]
-#[pyclass]
 pub struct Vector {
-    #[pyo3(get, set)]
     pub point: Point
 }
 
-#[pymethods]
 impl Vector {
-    #[new]
     pub const fn new(x: Scalar, y: Scalar, z: Scalar) -> Self {
         Self { point: Point::new(x, y, z) }
     }
 
     /// Create a new vector from a point
-    #[staticmethod]
     pub fn from_point(point: Point) -> Self {
         Self { point }
     }
@@ -43,7 +36,6 @@ impl Vector {
     /// - `magnitude: Scalar` - An `f64`, signifying the calculated magnitude of the vector
     /// - `a: Point` - The point that the vector is pointing towards (the direction of the vector)
     /// - `b: Point` - The origin point of the vector
-    #[staticmethod]
     pub fn from_magnitude(magnitude: Scalar, a: &Point, b: &Point) -> Self {
         // Calculate the distances between the points
         let dx: Scalar = b.x - a.x;
@@ -81,16 +73,6 @@ impl Vector {
 
         Scalar::new(magnitude)
     }
-    
-    pub fn mul(&self, other: Scalar) -> Self {
-        self.clone() * other
-    }
-
-    pub fn __add__(&self, rhs: Self) -> Self { self.clone() + rhs }
-    pub fn __sub__(&self, rhs: Self) -> Self { self.clone() - rhs }
-    pub fn __mul__(&self, rhs: Self) -> Self { self.clone() * rhs }
-    pub fn __truediv__(&self, rhs: Scalar) -> Self { self.clone() / rhs }
-    pub fn __repr__(&self) -> String { format!("{self:?}") }
 }
 
 impl std::ops::Add for Vector {

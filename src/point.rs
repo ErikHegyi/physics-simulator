@@ -1,22 +1,15 @@
-use pyo3::{pyclass, pymethods};
 use crate::scalar::Scalar;
 
 
 /// A point in a 3-dimensional space
 #[derive(Debug, Clone, Copy, PartialEq, PartialOrd)]
-#[pyclass]
 pub struct Point {
-    #[pyo3(get, set)]
     pub x: Scalar,  // Width
-    #[pyo3(get, set)]
     pub y: Scalar,  // Height
-    #[pyo3(get, set)]
     pub z: Scalar  // Depth
 }
 
-#[pymethods]
 impl Point {
-    #[new]
     pub const fn new(x: Scalar, y: Scalar, z: Scalar) -> Self {
         Self { x, y, z }
     }
@@ -30,16 +23,6 @@ impl Point {
         Scalar::new(
             (x.value.powi(2) + y.value.powi(2) + z.value.powi(2)).sqrt()
         )
-    }
-
-    pub fn __add__(&self, rhs: Self) -> Self { self.clone() + rhs }
-    pub fn __sub__(&self, rhs: Self) -> Self { self.clone() - rhs }
-    pub fn __mul__(&self, rhs: Scalar) -> Self {
-        Self {
-            x: self.x * rhs,
-            y: self.y * rhs,
-            z: self.z * rhs
-        }
     }
 }
 

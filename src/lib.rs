@@ -5,36 +5,20 @@ mod scalar;
 mod radiation;
 mod point_body;
 mod constants;
-mod star;
-mod planet;
+mod astronomy;
+mod graphics;
 
 use crate::{
+    constants::*,
+    degree::*,
     point::*,
+    point_body::*,
+    radiation::*,
     scalar::*,
     vector::*,
-    degree::*,
-    radiation::*,
-    point_body::*,
-    star::*,
-    planet::*,
-    constants::*,
 };
 
-use pyo3::prelude::*;
-
-/// A Python module implemented in Rust.
-#[pymodule(name = "physics")]
-fn physics(m: &Bound<'_, PyModule>) -> PyResult<()> {
-    m.add_class::<Point>()?;
-    m.add_class::<Vector>()?;
-    m.add_class::<Scalar>()?;
-    m.add_class::<Degree>()?;
-    m.add_class::<Radiation>()?;
-    m.add_class::<Constants>()?;
-    m.add_class::<PointBody>()?;
-    m.add_class::<Star>()?;
-    m.add_class::<StarType>()?;
-    m.add_class::<Planet>()?;
-    m.add_class::<PlanetType>()?;
-    Ok(())
-}
+use astronomy::astronomical_simulation::*;
+use astronomy::planet::*;
+use astronomy::star::*;
+use graphics::window::*;

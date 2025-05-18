@@ -1,8 +1,6 @@
-use pyo3::prelude::*;
 use crate::*;
 
 
-#[pyclass]
 #[derive(Debug, Clone, PartialEq, Copy)]
 pub enum StarType {
     O,  // Blue
@@ -15,26 +13,16 @@ pub enum StarType {
 }
 
 
-#[pyclass]
 #[derive(Clone, Debug)]
 pub struct Star {
-    #[pyo3(get, set)]
     pub name: String,
-    
-    #[pyo3(get, set)]
     pub radius: Scalar,
-    
-    #[pyo3(get, set)]
     pub radiation: Radiation,
-
-    #[pyo3(get)]
     point_body: PointBody
 }
 
 
-#[pymethods]
 impl Star {
-    #[new]
     pub fn new(name: String,
                velocity: Vector,
                coordinates: Point,
@@ -69,24 +57,24 @@ impl Star {
     pub fn acceleration(&self, force: Vector) -> Vector { self.point_body.acceleration(force) }
     pub fn force(&self, acceleration: Vector) -> Vector { self.point_body.force(acceleration) }
     pub fn distance(&self, other: &Point) -> Scalar { self.point_body.distance(other) }
-    pub fn gravitational_force(&self, other: PointBody) -> Vector { self.point_body.gravitational_force(other) }
+    pub fn gravitational_force(&self, other: &PointBody) -> Vector { self.point_body.gravitational_force(other) }
     pub fn advance(&mut self, dt: Scalar) { self.point_body.advance(dt) }
 
     /* ----- STAR METHODS ----- */
     pub fn surface_acceleration(&self) -> Vector {
         Vector::new(
-            Constants::ZERO,
-            -Constants::G * self.mass() / self.radius.powi(2),
-            Constants::ZERO
+            ZERO,
+            -G * self.mass() / self.radius.powi(2),
+            ZERO
         )
     }
 
     pub fn luminosity(&self) -> Scalar {
-        Constants::SOLAR_LUMINOSITY * (self.mass() / Constants::SOLAR_MASS).pow(scalar!(3.5))
+        SOLAR_LUMINOSITY * (self.mass() / SOLAR_MASS).pow(scalar!(3.5))
     }
 
     pub fn surface_temperature(&self) -> Scalar {
-        let constant: Scalar = scalar!(4) * Constants::PI * Constants::STEFAN_BOLTZMANN_CONSTANT;
+        let constant: Scalar = scalar!(4) * PI * STEFAN_BOLTZMANN_CONSTANT;
         (self.luminosity() / (constant * self.radius.powi(2))).pow(scalar!(0.25))
     }
 
@@ -113,7 +101,24 @@ impl Star {
             _ => { StarType::M }
         }
     }
+}
 
-    /* ----- PYTHON METHODS ----- */
-    pub fn __repr__(&self) -> String { format!("Star {}", self.name) }
+
+impl Celestial for Star {
+    #[inline]
+    fn point_body(&self) -> &PointBody { &self.point_body }
+    #[inline]
+    fn point_body_mut(&mut self) -> &mut PointBody { &mut self.point_body }
+    #[inline]
+    fn get_radius(&self) -> Scalar { self.radius }
+    #[inline]
+    fn get_name(&self) -> String { self.name.clone() }
+    #[inline]
+    fn is_star(&self) -> bool { true }
+    #[inline]
+    fn is_planet(&self) -> bool { false }
+    #[inline]
+    fn planet_type(&self) -> Option<PlanetType> { None }
+    #[inline]
+    fn get_color(&self) -> [f64; 4] { self.color() }
 }

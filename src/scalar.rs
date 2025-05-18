@@ -1,32 +1,21 @@
 use std::fmt::{Debug, Display, Formatter};
 use std::ops::{Add, AddAssign, Sub, SubAssign, Mul, MulAssign, Div, DivAssign, Neg};
-use crate::*;
 
 
 /// # Scalar
 /// A value with only magnitude and no direction
 #[derive(Clone, Copy, PartialEq, PartialOrd)]
-#[pyclass]
 pub struct Scalar {
-    #[pyo3(get, set)]
     pub value: f64
 }
 
-#[pymethods]
 impl Scalar {
-    #[new]
     pub const fn new(value: f64) -> Self {
         Self { value }
     }
     
     pub fn pow(&self, n: Self) -> Self { Self::new(self.value.powf(n.value)) }
     pub fn powi(&self, n: i32) -> Self { Self::new(self.value.powi(n)) }
-    pub fn __add__(&self, rhs: Self) -> Self { Self::new(self.value + rhs.value) }
-    pub fn __sub__(&self, rhs: Self) -> Self { Self::new(self.value - rhs.value) }
-    pub fn __mul__(&self, rhs: Self) -> Self { Self::new(self.value * rhs.value) }
-    pub fn __truediv__(&self, rhs: Self) -> Self { Self::new(self.value / rhs.value) }
-    pub fn __pow__(&self, power: i32, _mod: i32) -> Self { self.powi(power) }
-    pub fn __repr__(&self) -> String { format!("{self}") }
 }
 
 

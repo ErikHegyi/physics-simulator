@@ -1,8 +1,6 @@
-use pyo3::prelude::*;
 use crate::*;
 
 
-#[pyclass]
 #[derive(Clone, Debug)]
 /// # Point Body
 /// A body, with no volume, surface, ...
@@ -12,23 +10,14 @@ use crate::*;
 /// `coordinates: Point`\
 /// `charge: Scalar`
 pub struct PointBody {
-    #[pyo3(get, set)]
     pub mass: Scalar,
-    
-    #[pyo3(get, set)]
     pub velocity: Vector,
-    
-    #[pyo3(get, set)]
     pub coordinates: Point,
-    
-    #[pyo3(get, set)]
     pub charge: Scalar
 }
 
 
-#[pymethods]
 impl PointBody {
-    #[new]
     /// Create a new `PointBody` object
     pub fn new(mass: Scalar,
                velocity: Vector,
@@ -68,12 +57,12 @@ impl PointBody {
     }
     
     /// Calculate the gravitational force between two bodies
-    pub fn gravitational_force(&self, other: Self) -> Vector {
+    pub fn gravitational_force(&self, other: &Self) -> Vector {
         // Get the distance between the two bodies
         let distance: Scalar = self.distance(&other.coordinates);
         
         // Calculate the gravitational force between the two bodies
-        let force: Scalar = Constants::G * self.mass * other.mass / distance.powi(2);
+        let force: Scalar = constants::G * self.mass * other.mass / distance.powi(2);
         
         // Calculate the vector from the magnitude and the direction
         Vector::from_magnitude(force, &other.coordinates, &self.coordinates)
