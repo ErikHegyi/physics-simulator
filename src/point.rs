@@ -53,3 +53,21 @@ impl std::fmt::Display for Point {
         write!(f, "x: {} y: {} z: {}", self.x, self.y, self.z)
     }
 }
+
+
+#[macro_export]
+macro_rules! point {
+    () => { ORIGO };
+    (O) => { ORIGO };
+    (0) => { ORIGO };
+    ($x: expr, $y: expr, $z: expr) => {
+        Point::new(
+            scalar!($x), scalar!($y), scalar!($z)
+        )
+    };
+    (($x: expr, $y: expr, $z: expr)) => {
+        Point::new(
+            scalar!($x), scalar!($y), scalar!($z)
+        )
+    }
+}
