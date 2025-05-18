@@ -1,6 +1,7 @@
 use std::path::Path;
 pub use glfw::*;
 pub use glu_sys::*;
+use gl;
 use image::GenericImageView;
 
 
@@ -32,7 +33,7 @@ impl Window {
     ) -> Result<Self, InitError> {
         // Initialize GLFW
         let mut glfw_instance: Glfw = init_no_callbacks()?;
-        
+
         // Create the window
         let (mut window, receiver) = match glfw_instance
             .create_window(
@@ -195,7 +196,7 @@ impl Window {
             // TODO: Write out a text
         }
     }
-    
+
     /// Load a texture and return its ID
     /// ## Important
     /// This only loads the texture into memory.\
@@ -345,7 +346,7 @@ impl Window {
     pub fn load_identity_matrix() {
         unsafe { glLoadIdentity(); }
     }
-    
+
     pub fn get_key(&self, key: Key) -> Action {
         match unsafe { ffi::glfwGetKey(self.window.window_ptr(), key as i32) } {
             0 => Action::Release,
@@ -354,7 +355,7 @@ impl Window {
             _ => panic!("Some unknown action occurred.")
         }
     }
-    
+
     /// Run the render loop with the given function
     /// The render loop looks like this:
     /// ```rust
