@@ -122,7 +122,5 @@ impl Debug for Scalar {
 #[macro_export]
 macro_rules! scalar {
     () => { Scalar::new(0.0) };
-    ($x: literal) => { Scalar::from($x) };
-    ($x: ident) => { Scalar::from($x) };
     ($x: expr) => { Scalar::from($x) };
 }
