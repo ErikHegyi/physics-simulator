@@ -1,28 +1,12 @@
-mod point;
-mod vector;
-mod degree;
-mod scalar;
-mod radiation;
-mod point_body;
-mod constants;
 mod astronomy;
 mod graphics;
+mod general;
 
 use crate::{
-    constants::*,
-    degree::*,
-    point::*,
-    point_body::*,
-    radiation::*,
-    scalar::*,
-    vector::*,
+    astronomy::*,
+    graphics::*,
+    general::*
 };
-
-use astronomy::astronomical_simulation::*;
-use astronomy::planet::*;
-use astronomy::star::*;
-use graphics::window::*;
-
 
 
 fn main() {

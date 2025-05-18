@@ -277,7 +277,7 @@ impl AstronomicalSimulation {
             }
         }
 
-        
+
         // Move the object based on the force applied to it and its initial velocity
         for (i, object) in self.celestials.iter_mut().enumerate() {
             let body: &mut PointBody = object.point_body_mut();
@@ -291,7 +291,7 @@ impl AstronomicalSimulation {
 #[macro_export]
 macro_rules! astronomical_simulation {
     (
-        $( $celestial: expr ),* $(,)? 
+        $( $celestial: expr ),* $(,)?
     ) => {
         AstronomicalSimulation::new(
             scalar!(1),
