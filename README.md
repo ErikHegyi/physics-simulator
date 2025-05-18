@@ -4,21 +4,15 @@
 The goal of this program is to be able to simulate all of our current knowledge of physics.
 
 ## Method
-The program is written in **Rust** and **Python**.
-
-### Rust
-The physical calculations are performed in Rust.
-This includes things like vector algebra, gravitational force calculations, ...
-
-### Python
-Since Rust does not have inheritance, the Rust structs are exported to Python.\
-Python also contains the graphics of the simulation, which were written using **PyOpenGL**.
+The program is written in **Rust**.
+It uses [**glu_sys**](https://github.com/moalyousef/glu-sys), [**gl**](https://github.com/rust-windowing/gl-rs/tree/master/gl) and [**glfw-rs**](https://github.com/PistonDevelopers/glfw-rs) for rendering graphics.
+It uses [**image**](https://github.com/image-rs/image) for loading the textures, and [**rayon**](https://github.com/rayon-rs/rayon) for parallel computing.
 
 ## Astronomy
 The first part of the simulation is **astronomy**.
 
 ### Calculations
-A $\Delta t$ time is given when setting up the program. The default for this is **1 hour**.\
+A $\Delta t$ time is given when setting up the program.\
 The lower this value is, the more precise the simulation will be, but it will also be a lot slower.
 When $\Delta t$ time passes inside the simulation, the program updates the **coordinates** of the objects:\
 $$celestial_x = celestial_x + v_{x_{celestial}}\Delta t$$\
