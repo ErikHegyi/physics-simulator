@@ -195,3 +195,15 @@ impl std::fmt::UpperExp for Vector {
         write!(f, "{:E}", self.magnitude().value)
     }
 }
+
+
+#[macro_export]
+macro_rules! vector {
+    () => { NULL_VECTOR };
+    (0) => { NULL_VECTOR };
+    ($x: expr, $y: expr, $z: expr) => {
+        Vector::new(
+            scalar!($x), scalar!($y), scalar!($z)
+        )
+    };
+}
