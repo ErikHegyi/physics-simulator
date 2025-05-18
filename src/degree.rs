@@ -86,3 +86,13 @@ impl Clone for Degree {
 }
 
 impl Copy for Degree { }
+
+
+#[macro_export]
+macro_rules! degree {
+    () => { Degree::new(0, 0, 0) };
+    ($x: expr) => { Degree::new($x) };
+    ($x: expr, $y: expr) => { Degree::new($x, $y, 0) };
+    ($x: expr, $y: expr, $z: expr) => { Degree::new($x, $y, $z) };
+    (($x: expr, $y: expr, $z: expr)) => { Degree::new($x, $y, $z) };
+}
