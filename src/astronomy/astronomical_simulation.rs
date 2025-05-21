@@ -38,11 +38,14 @@ pub struct AstronomicalSimulation {
 
     window: Window,
     textures: HashMap<String, u32>,
+    drag: [f64; 2],
+    button_held_down: bool,
+    mouse_pos: [f64; 2],
+    rotation_sensitivity: f32,
 
     calculation_amount: u16,
 
     multi_processor: bool,
-
 }
 
 
@@ -56,23 +59,11 @@ impl AstronomicalSimulation {
     ) -> Self {
         let mut s: Self = Self {
             dt,
-            time: Scalar::new(0.0),
             celestials,
             name,
-            time_stopped: false,
             move_speed,
-            window: Window::new(
-                    600,
-                    600,
-                    [0.0, 0.0, 0.0, 1.0],
-                    "Astronomical Simulation",
-                    45,
-                    [0.0, 0.0, -5.0],
-                    Some(BACKGROUND_IMAGE)
-                ).unwrap(),
-            textures: HashMap::new(),
-            calculation_amount: 0,
-            multi_processor
+            multi_processor,
+            ..Self::default()
         };
         
         s.load_textures();
@@ -139,10 +130,12 @@ impl AstronomicalSimulation {
     }
     
     fn move_forward(&mut self, amount: f32) {
+        let rot_x: Degree = Degree::from_float(self.window.camera_rotation[1] as f64);
+        let rot_y: Degree = Degree::from_float(self.window.camera_rotation[0] as f64);
         self.window.camera_location = [
-            self.window.camera_location[0],
-            self.window.camera_location[1],
-            self.window.camera_location[2] + amount
+            self.window.camera_location[0] - amount * (rot_x.sin() * rot_y.cos()) as f32,
+            self.window.camera_location[1] + amount * rot_y.sin() as f32,
+            self.window.camera_location[2] + amount * (rot_x.cos() * rot_y.cos()) as f32
         ];
     }
     
@@ -174,11 +167,24 @@ impl AstronomicalSimulation {
         self.move_up(-amount);
     }
     
-    fn rotate_camera(&mut self) {
-        
+    fn rotate_camera(&mut self, roll: f32, pitch: f32, yaw: f32) {
+        self.window.camera_rotation = [
+            self.window.camera_rotation[0] + roll,
+            self.window.camera_rotation[1] + pitch,
+            self.window.camera_rotation[2] + yaw
+        ]
     }
 
     fn handle_events(&mut self, event: WindowEvent) {
+        let (x, y) = self.window.get_cursor_pos();
+        if self.button_held_down {
+            let dx: f64 = x - self.mouse_pos[0];
+            let dy: f64 = y - self.mouse_pos[1];
+            self.drag = [dx, dy];
+            self.rotate_camera(self.drag[1] as f32 * self.rotation_sensitivity, self.drag[0] as f32 * self.rotation_sensitivity, 0.0);
+        }
+        self.mouse_pos = [x, y];
+
         match event {
             WindowEvent::Key(Key::W, _, Action::Press, _) | WindowEvent::Key(Key::W, _, Action::Repeat, _) => {
                 self.move_forward(self.move_speed);
@@ -186,21 +192,23 @@ impl AstronomicalSimulation {
             WindowEvent::Key(Key::S, _, Action::Press, _) | WindowEvent::Key(Key::S, _, Action::Repeat, _) => {
                 self.move_backward(self.move_speed);
             },
-            WindowEvent::Key(Key::A, _, Action::Press, _) | WindowEvent::Key(Key::A, _, Action::Repeat, _) => {
-                self.move_left(self.move_speed);
+            WindowEvent::Key(Key::LeftShift, _, Action::Press, _) => {
+                self.move_speed *= 5.0;
             },
-            WindowEvent::Key(Key::D, _, Action::Press, _) | WindowEvent::Key(Key::D, _, Action::Repeat, _) => {
-                self.move_right(self.move_speed);
+            WindowEvent::Key(Key::LeftShift, _, Action::Release, _) => {
+                self.move_speed /= 5.0;
             },
-            WindowEvent::Key(Key::Space, _, Action::Press, _) | WindowEvent::Key(Key::Space, _, Action::Repeat, _) => {
-                self.move_up(self.move_speed);
-            },
-            WindowEvent::Key(Key::LeftShift, _, Action::Press, _) | WindowEvent::Key(Key::LeftShift, _, Action::Repeat, _) => {
-                self.move_down(self.move_speed);
-            },
-            WindowEvent::Key(Key::Tab, _, Action::Press, _) => {
+            WindowEvent::Key(Key::Space, _, Action::Press, _) => {
                 self.time_stopped = !self.time_stopped;
             },
+            WindowEvent::MouseButton(MouseButton::Button1, Action::Press, _) => {
+                self.button_held_down = true;
+                self.drag = [0.0; 2];
+            },
+            WindowEvent::MouseButton(MouseButton::Button1, Action::Release, _) => {
+                self.button_held_down = false;
+                self.drag = [0.0; 2];
+            }
             _ => ()
         }
     }
@@ -228,7 +236,7 @@ impl AstronomicalSimulation {
                 for (_, event) in flush_messages(e) {
                     (*this).handle_events(event);
                 }
-
+                
                 (*this).window.move_camera();
                 
                 (*this).window.load_background_image();
@@ -283,6 +291,36 @@ impl AstronomicalSimulation {
             let body: &mut PointBody = object.point_body_mut();
             body.advance(self.dt);
             body.velocity += body.acceleration(forces[i]) * self.dt;
+        }
+    }
+}
+
+
+impl Default for AstronomicalSimulation {
+    fn default() -> Self {
+        Self {
+            dt: scalar!(10),
+            time: scalar!(0),
+            celestials: Vec::new(),
+            name: String::from("Astronomical Simulation"),
+            time_stopped: false,
+            move_speed: 0.2,
+            window: Window::new(
+                600,
+                600,
+                [0.0, 0.0, 0.0, 1.0],
+                "Astronomical Simulation",
+                45,
+                [0.0, 0.0, -5.0],
+                Some(BACKGROUND_IMAGE)
+            ).unwrap(),
+            textures: HashMap::new(),
+            drag: [0.0; 2],
+            mouse_pos: [0.0; 2],
+            button_held_down: false,
+            rotation_sensitivity: 0.05,
+            calculation_amount: 0,
+            multi_processor: false
         }
     }
 }

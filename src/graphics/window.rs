@@ -46,6 +46,8 @@ impl Window {
         window.make_current();  // Make the context current
         window.set_framebuffer_size_polling(true);  // Check for window resizes
         window.set_key_polling(true);  // Record key presses
+        window.set_mouse_button_polling(true);  // Record mouse button presses
+        window.set_cursor_pos_polling(true);  // Record the position of the cursor
         
         // Load OpenGL functions
         gl::load_with(|symbol| window.get_proc_address(symbol) as *const _);
@@ -98,6 +100,9 @@ impl Window {
     
     pub fn move_camera(&self) {
         unsafe {
+            glRotatef(self.camera_rotation[0], 1.0, 0.0, 0.0);
+            glRotatef(self.camera_rotation[1], 0.0, 1.0, 0.0);
+            glRotatef(self.camera_rotation[2], 0.0, 0.0, 1.0);
             glTranslatef(self.camera_location[0], self.camera_location[1], self.camera_location[2]);
         }
     }
@@ -346,7 +351,13 @@ impl Window {
     pub fn load_identity_matrix() {
         unsafe { glLoadIdentity(); }
     }
-
+    
+    /// Get the current state for the given key
+    /// ## Returns
+    /// The state of the key:
+    /// - `Action::Release` - The key was just released
+    /// - `Action::Press` - The key was just pressed
+    /// - `Action::Repeat` - The key is being held down
     pub fn get_key(&self, key: Key) -> Action {
         match unsafe { ffi::glfwGetKey(self.window.window_ptr(), key as i32) } {
             0 => Action::Release,
@@ -354,6 +365,21 @@ impl Window {
             2 => Action::Repeat,
             _ => panic!("Some unknown action occurred.")
         }
+    }
+    
+    /// Get the current cursor position
+    pub fn get_cursor_pos(&self) -> (f64, f64) {
+        self.window.get_cursor_pos()
+    }
+    
+    /// Get the width of the window
+    pub fn get_width(&self) -> u32 {
+        self.width
+    }
+    
+    /// Get the height of the window
+    pub fn get_height(&self) -> u32 {
+        self.height
     }
 
     /// Run the render loop with the given function
