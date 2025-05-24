@@ -191,18 +191,6 @@ impl Window {
         }
     }
 
-    pub fn draw_text(
-        coordinates: [f32; 3],
-        color: [f32; 4],
-        _text: String
-    ) {
-        unsafe {
-            glColor4f(color[0], color[1], color[2], color[3]);
-            glRasterPos3f(coordinates[0], coordinates[1], coordinates[2]);
-            // TODO: Write out a text
-        }
-    }
-
     /// Load a texture and return its ID
     /// ## Important
     /// This only loads the texture into memory.\
