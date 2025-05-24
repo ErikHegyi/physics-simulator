@@ -8,6 +8,7 @@ const REDRAW_AMOUNT: u16 = 2500;
 
 /* ----- TEXTURES ----- */
 const STAR_TEXTURE: &str = "textures/star_grayscale.jpg";
+const EARTH_TEXTURE: &str = "textures/earth.jpeg";
 const TERRESTRIAL_TEXTURE: &str = "textures/terrestrial.jpg";
 
 
@@ -77,6 +78,9 @@ impl AstronomicalSimulation {
         self.textures.insert(
             String::from("terrestrial"), Window::load_texture(TERRESTRIAL_TEXTURE)
         );
+        self.textures.insert(
+            String::from("earth"), Window::load_texture(EARTH_TEXTURE)
+        );
     }
 
     pub fn add_celestial(&mut self, celestial: impl Celestial + Sync + 'static) {
@@ -116,7 +120,12 @@ impl AstronomicalSimulation {
                 Window::cancel_emission();
                 Window::react_to_light(color);
                 Window::bind_texture(
-                    unsafe { *self.textures.get("terrestrial").unwrap_unchecked() }
+                    unsafe { 
+                        *self.textures.get(
+                            if celestial.get_name().to_lowercase().as_str() == "earth" { "earth" }
+                            else { "terrestrial" }
+                        ).unwrap_unchecked()
+                    }
                 )
             }
             
