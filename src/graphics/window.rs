@@ -44,10 +44,7 @@ impl Window {
         };
         
         window.make_current();  // Make the context current
-        window.set_framebuffer_size_polling(true);  // Check for window resizes
-        window.set_key_polling(true);  // Record key presses
-        window.set_mouse_button_polling(true);  // Record mouse button presses
-        window.set_cursor_pos_polling(true);  // Record the position of the cursor
+        window.set_all_polling(true);
         
         // Load OpenGL functions
         gl::load_with(|symbol| window.get_proc_address(symbol) as *const _);
@@ -57,7 +54,7 @@ impl Window {
             Some(image) => Some(Self::load_texture(image)),
             None => None
         };
-        
+
         // Create the object
         let mut s: Self = Self {
             width,
@@ -70,7 +67,7 @@ impl Window {
             background_texture_id,
             glfw_instance,
             window,
-            glfw_receiver: receiver,
+            glfw_receiver: receiver
         };
         
         s.set_size_callback();  // Set resize functions
@@ -106,25 +103,26 @@ impl Window {
             glTranslatef(self.camera_location[0], self.camera_location[1], self.camera_location[2]);
         }
     }
-
+    
+    pub fn resize(&mut self, width: i32, height: i32) {
+        unsafe {
+            glViewport(0, 0, width, height);
+            glMatrixMode(GL_PROJECTION);
+            glLoadIdentity();
+            gluPerspective(self.fov as f64, width as f64 / height as f64, 0.1, 50.0);
+            glMatrixMode(GL_MODELVIEW);
+            glLoadIdentity();
+        }
+        
+        self.width = width as u32;
+        self.height = height as u32;
+    }
+    
     fn set_size_callback(&mut self) {
         let this: *mut Self = self as *mut Self;
-        let fov: u8 = self.fov;
-        self.window.set_size_callback(move |_win, width, mut height| {
+        self.window.set_framebuffer_size_callback(move |_win, width, mut height| {
             if height == 0 { height = 1; }
-            unsafe {
-                glViewport(0, 0, width, height);
-                glMatrixMode(GL_PROJECTION);
-                glLoadIdentity();
-                gluPerspective(fov as f64, width as f64 / height as f64, 0.1, 50.0);
-                glMatrixMode(GL_MODELVIEW);
-                glLoadIdentity();
-            }
-
-            unsafe {
-                (*this).width = width as u32;
-                (*this).height = height as u32;
-            }
+            unsafe { (*this).resize(width, height) }
         });
     }
 
