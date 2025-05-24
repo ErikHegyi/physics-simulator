@@ -144,10 +144,12 @@ impl AstronomicalSimulation {
     }
 
     fn move_left(&mut self, amount: f32) {
+        let rot_x: Degree = Degree::from_float(self.window.camera_rotation[1] as f64);
+        let rot_y: Degree = Degree::from_float(self.window.camera_rotation[0] as f64);
         self.window.camera_location = [
-            self.window.camera_location[0] + amount,
-            self.window.camera_location[1],
-            self.window.camera_location[2]
+            self.window.camera_location[0] + amount * (rot_x.cos() * rot_y.cos()) as f32,
+            self.window.camera_location[1] + amount * rot_y.sin() as f32,
+            self.window.camera_location[2] + amount * (rot_x.sin() * rot_y.cos()) as f32
         ];
     }
     
@@ -191,6 +193,12 @@ impl AstronomicalSimulation {
             },
             WindowEvent::Key(Key::S, _, Action::Press, _) | WindowEvent::Key(Key::S, _, Action::Repeat, _) => {
                 self.move_backward(self.move_speed);
+            },
+            WindowEvent::Key(Key::D, _, Action::Press, _) | WindowEvent::Key(Key::D, _, Action::Repeat, _) => {
+                self.move_right(self.move_speed);
+            },
+            WindowEvent::Key(Key::A, _, Action::Press, _) | WindowEvent::Key(Key::A, _, Action::Repeat, _) => {
+                self.move_left(self.move_speed);
             },
             WindowEvent::Key(Key::LeftShift, _, Action::Press, _) => {
                 self.move_speed *= 5.0;
