@@ -103,26 +103,25 @@ impl Window {
             glTranslatef(self.camera_location[0], self.camera_location[1], self.camera_location[2]);
         }
     }
-    
-    pub fn resize(&mut self, width: i32, height: i32) {
-        unsafe {
-            glViewport(0, 0, width, height);
-            glMatrixMode(GL_PROJECTION);
-            glLoadIdentity();
-            gluPerspective(self.fov as f64, width as f64 / height as f64, 0.1, 50.0);
-            glMatrixMode(GL_MODELVIEW);
-            glLoadIdentity();
-        }
-        
-        self.width = width as u32;
-        self.height = height as u32;
-    }
-    
+
     fn set_size_callback(&mut self) {
         let this: *mut Self = self as *mut Self;
-        self.window.set_framebuffer_size_callback(move |_win, width, mut height| {
+        let fov: f64 = self.fov as f64;
+        self.window.set_size_callback(move |_win, width, mut height| {
             if height == 0 { height = 1; }
-            unsafe { (*this).resize(width, height) }
+            unsafe {
+                glViewport(0, 0, width, height);
+                glMatrixMode(GL_PROJECTION);
+                glLoadIdentity();
+                gluPerspective(fov, width as f64 / height as f64, 0.1, 50.0);
+                glMatrixMode(GL_MODELVIEW);
+                glLoadIdentity();
+            }
+            
+            unsafe {
+                (*this).width = width as u32;
+                (*this).height = height as u32;
+            }
         });
     }
 
