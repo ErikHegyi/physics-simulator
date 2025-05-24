@@ -181,6 +181,7 @@ impl Window {
         unsafe {
             glPushMatrix();
             glTranslatef(coordinates[0], coordinates[1], coordinates[2]);
+            glRotatef(90.0, 1.0, 0.0, 0.0);
             glColor4f(color[0], color[1], color[2], 1.0);
 
             let quad: *mut GLUquadric = gluNewQuadric();
