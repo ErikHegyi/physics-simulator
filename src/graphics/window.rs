@@ -367,6 +367,74 @@ impl Window {
     pub fn get_height(&self) -> u32 {
         self.height
     }
+    
+    /// Draw a text onto the screen
+    /// ## Params
+    /// `x: f32` - The x coordinate of the text  
+    /// `y: f32` - The y coordinate of the text  
+    /// `z: f32` - The z coordinate of the text
+    /// `text: impl ToString` - The text to be drawn  
+    /// `font: Font` - The font of the text  
+    /// `font_size: f32` - The size of the text  
+    /// `color: [f32; 3]` - The RGB color of the text
+    pub fn draw_text(
+        &self,
+        x: f32,
+        y: f32,
+        z: f32,
+        text: impl ToString,
+        font: crate::graphics::Font,
+        font_size: f32,
+        color: [f32; 3],
+    ) {
+        let mut scale: Option<f32> = None;
+        let mut width: Option<f32> = None;
+        let mut height: Option<f32> = None;
+        
+        // Configure OpenGL
+        unsafe {
+            glEnable(gl::BLEND);
+            glBlendFunc(gl::SRC_ALPHA, gl::ONE_MINUS_SRC_ALPHA);
+            
+            glColor3f(color[0], color[1], color[2]);
+            
+            gl::Enable(gl::TEXTURE_2D);
+            glDisable(GL_LIGHTING);
+        }
+
+        
+        // Iterate through each character of the text
+        for (i, character) in text.to_string().chars().enumerate() {
+            // Get the texture of the font
+            match font.get_character(character) {
+                Some(character) => {
+                    // Calculate the scale
+                    if scale == None {
+                        scale = Some(font_size / self.height as f32 / character.height() as f32);
+                        width = Some(character.width() as f32);
+                        height = Some(character.height() as f32);
+                    }
+
+                    // Draw the character
+                    unsafe {
+                        character.draw(
+                            x + (i as f32 * scale.unwrap_unchecked() * width.unwrap_unchecked()),
+                            -(y + (height.unwrap_unchecked() + character.height() as f32) * scale.unwrap_unchecked()),
+                            -z,
+                            scale.unwrap_unchecked()
+                        )
+                    }
+                },
+                None => continue
+            }
+        }
+        
+        unsafe {
+            glDisable(gl::BLEND);
+            glEnable(GL_LIGHTING);
+        }
+
+    }
 
     /// Run the render loop with the given function
     /// The render loop looks like this:

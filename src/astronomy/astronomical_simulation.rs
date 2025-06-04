@@ -43,6 +43,8 @@ pub struct AstronomicalSimulation {
     button_held_down: bool,
     mouse_pos: [f64; 2],
     rotation_sensitivity: f32,
+    
+    font: Font,
 
     calculation_amount: u16,
 
@@ -110,6 +112,16 @@ impl AstronomicalSimulation {
             
             let colors: [f64; 4] = celestial.get_color();
             let color: [f32; 3] = [colors[0] as f32, colors[1] as f32, colors[2] as f32];
+            
+            self.window.draw_text(
+                coordinates[0],
+                coordinates[1],
+                coordinates[2],
+                celestial.get_name(),
+                self.font.clone(),
+                24.0,
+                [1.0, 1.0, 1.0]
+            );
             
             if celestial.is_star() {
                 Window::add_light_source(color, coordinates);
@@ -336,6 +348,7 @@ impl Default for AstronomicalSimulation {
             mouse_pos: [0.0; 2],
             button_held_down: false,
             rotation_sensitivity: 0.05,
+            font: load_font!("fonts\\arial.ttf"),
             calculation_amount: 0,
             multi_processor: false
         }
